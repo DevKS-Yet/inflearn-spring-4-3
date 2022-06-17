@@ -5,6 +5,7 @@ import hello.itemservice.domain.item.ItemRepository;
 import hello.itemservice.domain.item.SaveCheck;
 import hello.itemservice.domain.item.UpdateCheck;
 import hello.itemservice.web.validation.form.ItemSaveForm;
+import hello.itemservice.web.validation.form.ItemUpdateForm;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
@@ -81,7 +82,7 @@ public class ValidationItemControllerV4 {
     }
 
     @PostMapping("/{itemId}/edit")
-    public String edit(@PathVariable Long itemId, @Validated @ModelAttribute("item") ItemSaveForm form, BindingResult bindingResult) {
+    public String edit(@PathVariable Long itemId, @Validated @ModelAttribute("item") ItemUpdateForm form, BindingResult bindingResult) {
 
         // 특정 필드가 아닌 복합 룰 검증
         if (form.getPrice() != null && form.getQuantity() != null) {
@@ -96,7 +97,12 @@ public class ValidationItemControllerV4 {
             return "validation/v4/editForm";
         }
 
-        itemRepository.update(itemId, item);
+        Item itemParam = new Item();
+        itemParam.setItemName(form.getItemName());
+        itemParam.setPrice(form.getPrice());
+        itemParam.setQuantity(form.getQuantity());
+
+        itemRepository.update(itemId, itemParam);
         return "redirect:/validation/v4/items/{itemId}";
     }
 
